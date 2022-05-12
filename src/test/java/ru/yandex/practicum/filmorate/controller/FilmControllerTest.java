@@ -23,11 +23,11 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class FilmControllerTest {
-    private URI uri = URI.create("http://localhost:8080/");
+    private final URI uri = URI.create("http://localhost:8080/");
     private HttpClient httpClient;
     private HttpResponse<String> responseBody;
 
-    private Gson gson = new GsonBuilder()
+    private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
@@ -96,39 +96,39 @@ class FilmControllerTest {
     private Stream<Arguments> test1MethodSource() {
         return Stream.of(
                 Arguments.of("No Exception", 200, new Film(0, "cinema", "cinema description",
-                        LocalDate.of(1967, 03, 25), Duration.ofMinutes(100))),
+                        LocalDate.of(1967, 3, 25), Duration.ofMinutes(100))),
                 Arguments.of("InvalidNameException", 500, new Film(0, "", "cinema description",
-                        LocalDate.of(1967, 03, 25), Duration.ofMinutes(100))),
+                        LocalDate.of(1967, 3, 25), Duration.ofMinutes(100))),
                 Arguments.of("FilmAlreadyExistException", 500, new Film(0, "cinema",
-                        "cinema description", LocalDate.of(1967, 03, 25),
+                        "cinema description", LocalDate.of(1967, 3, 25),
                         Duration.ofMinutes(100))),
                 Arguments.of("HighLengthDescriptionException", 500, new Film(0, "cinema1",
                         "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345" +
                                 "678901234567890123456789012345678901234567890123456789012345678901234567890123456789012" +
-                                "34567890123456789012345678901", LocalDate.of(1967, 03, 25),
+                                "34567890123456789012345678901", LocalDate.of(1967, 0, 25),
                         Duration.ofMinutes(100))),
                 Arguments.of("OldDateFilmException", 500, new Film(0, "cinema2",
-                        "cinema description", LocalDate.of(1867, 03, 25), Duration.ofMinutes(100))),
+                        "cinema description", LocalDate.of(1867, 3, 25), Duration.ofMinutes(100))),
                 Arguments.of("NegativeDurationException", 500,
                         new Film(0, "cinema3", "cinema description", LocalDate.of(1967,
-                                03, 25), Duration.ofMinutes(-1)))
+                                3, 25), Duration.ofMinutes(-1)))
         );
     }
 
     private Stream<Arguments> test2MethodSource() {
         return Stream.of(
                 Arguments.of("InvalidNameException", 500, new Film(0, "", "cinema description",
-                        LocalDate.of(1967, 03, 25), Duration.ofMinutes(100))),
+                        LocalDate.of(1967, 3, 25), Duration.ofMinutes(100))),
                 Arguments.of("HighLengthDescriptionException", 500, new Film(0, "cinema1",
                         "1234567890123456789012345678901234567890123456789012345678901234567890123456789012345" +
                                 "678901234567890123456789012345678901234567890123456789012345678901234567890123456789012" +
-                                "34567890123456789012345678901", LocalDate.of(1967, 03, 25),
+                                "34567890123456789012345678901", LocalDate.of(1967, 3, 25),
                         Duration.ofMinutes(100))),
                 Arguments.of("OldDateFilmException", 500, new Film(0, "cinema2",
-                        "cinema description", LocalDate.of(1867, 03, 25), Duration.ofMinutes(100))),
+                        "cinema description", LocalDate.of(1867, 3, 25), Duration.ofMinutes(100))),
                 Arguments.of("NegativeDurationException", 500,
                         new Film(0, "cinema3", "cinema description", LocalDate.of(1967,
-                                03, 25), Duration.ofMinutes(-1)))
+                                3, 25), Duration.ofMinutes(-1)))
         );
     }
 }
