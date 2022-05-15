@@ -38,9 +38,9 @@ class UserControllerTest {
     @DisplayName("GIVEN a user with incorrect data " +
             "WHEN user POSTed " +
             "THEN server response that error occurred")
-    @MethodSource("test1MethodSource")
+    @MethodSource("test1And2MethodSource")
     @ParameterizedTest(name = "{index} test for exception:  {0}. Should response code: {1}")
-    void Test1_shouldGetExceptionForPostIncorrectDataOfUser(String exception, int errorCode, User user) {
+    void Test1_shouldGetExceptionForPostIncorrectDataOfUser(String exception,  int errorCode1, int errorCode2, User user) {
         String jsonFilm = gson.toJson(user);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -60,15 +60,15 @@ class UserControllerTest {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку. Ошибка: " + e.getMessage());
         }
-        assertTrue(responseBody.statusCode() == errorCode);
+        assertTrue((responseBody.statusCode() == errorCode1) || (responseBody.statusCode() == errorCode2));
     }
 
     @DisplayName("GIVEN a user with incorrect data " +
             "WHEN film PUTed " +
             "THEN server response that error occurred")
-    @MethodSource("test2MethodSource")
+    @MethodSource("test1And2MethodSource")
     @ParameterizedTest(name = "{index} test for exception:  {0}. Should response code: {1}")
-    void Test2_shouldGetExceptionForPutIncorrectDataOfUser(String exception, int errorCode, User user) {
+    void Test2_shouldGetExceptionForPutIncorrectDataOfUser(String exception,  int errorCode1, int errorCode2, User user) {
         String jsonFilm = gson.toJson(user);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -88,45 +88,60 @@ class UserControllerTest {
             System.out.println("Во время выполнения запроса возникла ошибка.\n" +
                     "Проверьте, пожалуйста, адрес и повторите попытку. Ошибка: " + e.getMessage());
         }
-        assertTrue(responseBody.statusCode() == errorCode);
+        assertTrue((responseBody.statusCode() == errorCode1) || (responseBody.statusCode() == errorCode2));
     }
 
-    private Stream<Arguments> test1MethodSource() {
+    private Stream<Arguments> test1And2MethodSource() {
         return Stream.of(
-                Arguments.of("No Exception", 200, new User(0, "test@test.ru", "user1", "user",
-                        LocalDate.of(1990, 1, 1))),
-                Arguments.of("UserAlreadyExistException", 500, new User(0, "test@test.ru", "user1",
-                        "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidEmailException, check blank", 500, new User(0, "",
-                        "user1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidEmailException, check contains @", 500, new User(0, "testtest.ru",
-                        "user1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidLoginException, check blank", 500, new User(0, "test@test.ru",
-                        "", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidLoginException, check space", 500, new User(0, "test@test.ru",
-                        "user 1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("No exception when name is empty", 200, new User(0, "test1@test.ru",
-                        "user1", "", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InFutureBirthdayException", 500, new User(0, "test@test.ru",
-                        "user1", "user", LocalDate.MAX))
-        );
-    }
-
-    private Stream<Arguments> test2MethodSource() {
-        return Stream.of(
-                Arguments.of("InvalidEmailException, check blank", 500, new User(0, "",
-                        "user1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidEmailException, check contains @", 500, new User(0, "testtest.ru",
-                        "user1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidLoginException, check blank", 500, new User(0, "test@test.ru",
-                        "", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InvalidLoginException, check space", 500, new User(0, "test@test.ru",
-                        "user 1", "user", LocalDate.of(1990, 1, 1))),
-                Arguments.of("No exception when name is empty", 200, new User(0, "test@test.ru",
-                        "user1", "", LocalDate.of(1990, 1, 1))),
-                Arguments.of("InFutureBirthdayException", 500, new User(0, "test@test.ru",
-                        "user1", "user", LocalDate.MAX))
-        );
+                Arguments.of("No Exception", 200, 200, User.builder()
+                        .id(0)
+                        .email("test@test.ru")
+                        .login("user1")
+                        .name("user")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("InvalidEmailException, check blank", 400, 500, User.builder()
+                        .id(0)
+                        .email("")
+                        .login("user1")
+                        .name("user")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("InvalidEmailException, check contains @",  400, 500, User.builder()
+                        .id(0)
+                        .email("testtest.ru")
+                        .login("user1")
+                        .name("user")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("InvalidLoginException, check blank",  400, 500, User.builder()
+                        .id(0)
+                        .email("test@test.ru")
+                        .login("")
+                        .name("user")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("InvalidLoginException, check space",  400, 500, User.builder()
+                        .id(0)
+                        .email("test@test.ru")
+                        .login("user 1")
+                        .name("user")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("No exception when name is empty", 200, 200, User.builder()
+                        .id(0)
+                        .email("test@test.ru")
+                        .login("user1")
+                        .name("")
+                        .birthday(LocalDate.of(1990, 1, 1))
+                        .build()),
+                Arguments.of("InFutureBirthdayException",  400, 500, User.builder()
+                        .id(0)
+                        .email("test@test.ru")
+                        .login("user1")
+                        .name("user")
+                        .birthday(LocalDate.MAX)
+                        .build()));
     }
 }
 

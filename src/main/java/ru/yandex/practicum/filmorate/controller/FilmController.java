@@ -2,26 +2,23 @@ package ru.yandex.practicum.filmorate.controller;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import javax.naming.InvalidNameException;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.IOException;
 import java.time.LocalDate;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    public final HashMap<String, Film> films = new HashMap<>();
+    public final List<Film> films = new ArrayList<>();
 
     @GetMapping()
-    public HashMap<String, Film> findAll() {
+    public List<Film> findAll() {
         log.debug("Текущее количество фильмов: {}", films.size());
 
         return films;
@@ -32,23 +29,19 @@ public class FilmController {
         log.trace(String.valueOf(film));
 
         try {
-            if (film.getName().isEmpty()) {
-                throw new InvalidNameException("Необходимо указать название фильма");
-            } else if (!films.isEmpty() && films.containsKey(film.getName())) {
-                throw new FilmAlreadyExistException("Фильм с таким названием уже существует");
-            } else if (film.getDescription().isEmpty() || film.getDescription().length() > 200) {
-                throw new HighLengthDescriptionException("Описание фильма не может превышать 200 символов");
-            } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                throw new OldDateFilmException("Дата релиза не может быть раньше 28 декабря 1895 года");
-            } else if (film.getDuration().isNegative()) {
-                throw new NegativeDurationException("Продолжительность фильма не может быть меньше 0");
+            if (validationName(film)) {
+                throw new ValidationException("Необходимо указать название фильма");
+            } else if (validationDescription(film)) {
+                throw new ValidationException("Описание фильма не может превышать 200 символов");
+            } else if (validationReleaseDate(film)) {
+                throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
+            } else if (validationDuration(film)) {
+                throw new ValidationException("Продолжительность фильма не может быть меньше 0");
             } else {
-                films.put(film.getName(), film);
+                films.add(film);
             }
-        } catch (InvalidNameException | OldDateFilmException | NegativeDurationException |
-                 HighLengthDescriptionException | FilmAlreadyExistException e) {
+        } catch (ValidationException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e.getMessage());
         }
         log.info("Фильм " + film.getName() + " добавлен");
 
@@ -60,29 +53,41 @@ public class FilmController {
         log.trace(String.valueOf(film));
 
         try {
-            if (film.getName().isEmpty()) {
-                throw new InvalidNameException("Необходимо указать название фильма");
-            } else if (!film.getDescription().isEmpty() && film.getDescription().length() > 200) {
-                throw new HighLengthDescriptionException("Описание фильма не может превышать 200 символов");
-            } else if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-                throw new OldDateFilmException("Дата релиза не может быть раньше 28 декабря 1895 года");
-            } else if (film.getDuration().isNegative()) {
-                throw new NegativeDurationException("Продолжительность фильма должна быть положительной");
+            if (validationName(film)) {
+                throw new ValidationException("Необходимо указать название фильма");
+            } else if (validationDescription(film)) {
+                throw new ValidationException("Описание фильма не может превышать 200 символов");
+            } else if (validationReleaseDate(film)) {
+                throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
+            } else if (validationDuration(film)) {
+                throw new ValidationException("Продолжительность фильма не может быть меньше 0");
             } else {
-                films.put(film.getName(), film);
+                films.add(film);
             }
-        } catch (InvalidNameException | OldDateFilmException | HighLengthDescriptionException |
-                 NegativeDurationException e) {
+        } catch (ValidationException e) {
             log.warn(e.getMessage());
-            throw new RuntimeException(e);
         }
         log.info("Информация о фильме обновлена");
 
         return film;
     }
 
-    @ExceptionHandler
-    void handleIllegalArgumentException(FilmAlreadyExistException e, HttpServletResponse response) throws IOException {
-        response.sendError(HttpStatus.BAD_REQUEST.value());
+    private boolean validationName(Film film) {
+        return film.getName().isEmpty();
+    }
+
+    private boolean validationDescription(Film film) {
+        return film.getDescription().isEmpty() || film.getDescription().length() > 200;
+    }
+
+    private boolean validationReleaseDate(Film film) {
+        return film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28));
+    }
+
+    private boolean validationDuration(Film film) {
+        return film.getDuration().isNegative();
     }
 }
+
+
+
