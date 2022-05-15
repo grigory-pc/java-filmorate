@@ -42,6 +42,7 @@ public class FilmController {
             }
         } catch (ValidationException e) {
             log.warn(e.getMessage());
+            throw e;
         }
         log.info("Фильм " + film.getName() + " добавлен");
 
@@ -66,6 +67,7 @@ public class FilmController {
             }
         } catch (ValidationException e) {
             log.warn(e.getMessage());
+            throw e;
         }
         log.info("Информация о фильме обновлена");
 

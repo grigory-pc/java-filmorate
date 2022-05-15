@@ -41,6 +41,7 @@ public class UserController {
             }
         } catch (ValidationException e) {
             log.warn(e.getMessage());
+            throw e;
         }
         log.info("Пользователь " + user.getName() + " добавлен");
 
@@ -63,6 +64,7 @@ public class UserController {
             }
         } catch (ValidationException e) {
             log.warn(e.getMessage());
+            throw e;
         }
         log.info("Информация о пользователе обновлена");
 
