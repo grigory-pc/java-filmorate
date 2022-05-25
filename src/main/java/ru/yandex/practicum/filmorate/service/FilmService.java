@@ -34,7 +34,7 @@ public class FilmService {
             likes = filmStorage.getFilmById(filmId).getLikes();
             if (!likes.contains(userId)) {
                 likes.add(userId);
-                System.out.println("Добавлен лайк фильму" + filmStorage.getFilmById(filmId).getName());
+                System.out.println("Добавлен лайк фильму: " + filmStorage.getFilmById(filmId).getName());
             } else {
                 System.out.println("Вы уже поставили лайк этому фильму");
             }
@@ -57,9 +57,9 @@ public class FilmService {
             }
             if (likes.contains(userId)) {
                 likes.remove(userId);
-                System.out.println("Убран лайк фильму" + filmStorage.getFilmById(filmId).getName());
+                System.out.println("Убран лайк фильму: " + filmStorage.getFilmById(filmId).getName());
             } else {
-                System.out.println("Вы не лайкали фильм" + filmStorage.getFilmById(filmId).getName());
+                System.out.println("Вы не лайкали фильм: " + filmStorage.getFilmById(filmId).getName());
             }
         } catch (NotFoundException e) {
             log.warn(e.getMessage());

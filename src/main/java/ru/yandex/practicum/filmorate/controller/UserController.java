@@ -79,6 +79,7 @@ public class UserController {
         log.trace(String.valueOf(friendId));
 
         userService.addFriend(id, friendId);
+        userService.addFriend(friendId, id);
 
         log.info("Информация о пользователе обновлена");
 

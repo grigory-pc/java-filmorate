@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.storage.UserStorage;
 import ru.yandex.practicum.filmorate.storage.Validator;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,6 +29,7 @@ public class UserService {
      */
     public long addFriend(long userId, long friendId) {
         friends = userStorage.getUserById(userId).getFriends();
+
         try {
             if (validator.validationId(userId) || validator.validationId(friendId)) {
                 throw new NotFoundException("id пользователя или добавляемого друга должен быть больше 0");
@@ -103,9 +105,8 @@ public class UserService {
             if (validator.validationId(userId) || validator.validationId(otherId)) {
                 throw new NotFoundException("id пользователя должен быть больше 0");
             }
-
-            Set<Long> userFriends = userStorage.getUserById(userId).getFriends();
-            Set<Long> otherFriends = userStorage.getUserById(otherId).getFriends();
+            Set<Long> userFriends = new HashSet<>(userStorage.getUserById(userId).getFriends()) ;
+            Set<Long> otherFriends = new HashSet<>(userStorage.getUserById(otherId).getFriends());
 
             userFriends.retainAll(otherFriends);
 
