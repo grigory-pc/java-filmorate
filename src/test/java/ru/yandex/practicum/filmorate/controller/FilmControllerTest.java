@@ -30,7 +30,6 @@ class FilmControllerTest {
 
     private final Gson gson = new GsonBuilder()
             .registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
 
     @BeforeEach
@@ -97,18 +96,17 @@ class FilmControllerTest {
     private Stream<Arguments> test1And2MethodSource() {
         return Stream.of(
                 Arguments.of("No Exception", 200, 200, Film.builder()
-                        .id(0)
                         .name("cinema")
                         .description("cinema description")
                         .releaseDate(LocalDate.of(1967, 3, 25))
-                        .duration(Duration.ofMinutes(100))
+                        .duration(100)
                         .build()),
                 Arguments.of("InvalidNameException", 400, 500, Film.builder()
                         .id(0)
                         .name("")
                         .description("cinema description")
                         .releaseDate(LocalDate.of(1967, 3, 25))
-                        .duration(Duration.ofMinutes(100))
+                        .duration(100)
                         .build()),
                 Arguments.of("HighLengthDescriptionException", 400, 500, Film.builder()
                         .id(0)
@@ -117,21 +115,21 @@ class FilmControllerTest {
                                 "345678901234567890123456789012345678901234567890123456789012345678901234567890123456789" +
                                 "01234567890123456789012345678901")
                         .releaseDate(LocalDate.of(1967, 3, 25))
-                        .duration(Duration.ofMinutes(100))
+                        .duration(100)
                         .build()),
                 Arguments.of("OldDateFilmException", 400, 500, Film.builder()
                         .id(0)
                         .name("cinema")
                         .description("cinema description")
                         .releaseDate(LocalDate.of(1867, 3, 25))
-                        .duration(Duration.ofMinutes(100))
+                        .duration(100)
                         .build()),
                 Arguments.of("NegativeDurationException", 400, 500, Film.builder()
                         .id(0)
                         .name("cinema")
                         .description("cinema description")
                         .releaseDate(LocalDate.of(1967, 3, 25))
-                        .duration(Duration.ofMinutes(-1))
+                        .duration(-1)
                         .build()));
     }
 }

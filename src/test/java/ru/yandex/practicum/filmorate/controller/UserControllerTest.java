@@ -98,7 +98,6 @@ class UserControllerTest {
     private Stream<Arguments> test1And2MethodSource() {
         return Stream.of(
                 Arguments.of("No Exception", 200, 200, User.builder()
-                        .id(0)
                         .email("test@test.ru")
                         .login("user1")
                         .name("user")
