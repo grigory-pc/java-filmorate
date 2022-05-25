@@ -1,89 +1,133 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
-    public final List<User> users = new ArrayList<>();
+    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserService userService;
 
+    /**
+     * Возвращает список всех пользователей
+     */
     @GetMapping()
     public List<User> findAll() {
-        log.debug("Текущее количество пользователей: {}", users.size());
+        log.debug("Текущее количество пользователей: {}", inMemoryUserStorage.getUserAll().size());
 
-        return users;
+        return inMemoryUserStorage.getUserAll();
     }
 
+    /**
+     * Возвращает пользователя по ID
+     *
+     * @param id объекта пользователя
+     * @return объект пользователя
+     */
+    @GetMapping("/{id}")
+    public User getUserById(@Valid @PathVariable long id) {
+        log.debug("Поиск пользователя: {}", inMemoryUserStorage.getUserById(id).getName());
+
+        return inMemoryUserStorage.getUserById(id);
+    }
+
+    /**
+     * Создаёт объект пользователя
+     *
+     * @return возвращает объект пользователя, который был создан
+     */
     @PostMapping()
     public User create(@Valid @RequestBody User user) {
         log.trace(String.valueOf(user));
 
-        try {
-            if (validationEmail(user)) {
-                throw new ValidationException("Необходимо указать email и email должен содержать символ '@'");
-            } else if (validationLogin(user)) {
-                throw new ValidationException("Необходимо указать login и login не должен содержать пробелов");
-            } else if (validationBirthday(user)) {
-                throw new ValidationException("Некорректно указана дата рождения. Она не может быть в будущем");
-            } else if (validationName(user)) {
-                user.setName(user.getLogin());
-            } else {
-                users.add(user);
-            }
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw e;
-        }
-        log.info("Пользователь " + user.getName() + " добавлен");
+        return inMemoryUserStorage.add(user);
 
-        return user;
     }
 
+    /**
+     * Обновляет данные пользователя
+     *
+     * @return возвращает обновленный объект пользователя
+     */
     @PutMapping()
     public User update(@Valid @RequestBody User user) {
-        try {
-            if (validationEmail(user)) {
-                throw new ValidationException("Необходимо указать email и email должен содержать символ '@'");
-            } else if (validationLogin(user)) {
-                throw new ValidationException("Необходимо указать login и login не должен содержать пробелов");
-            } else if (validationBirthday(user)) {
-                throw new ValidationException("Некорректно указана дата рождения. Она не может быть в будущем");
-            } else if (validationName(user)) {
-                user.setName(user.getLogin());
-            } else {
-                users.add(user);
-            }
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw e;
-        }
+        log.trace(String.valueOf(user));
+
+        return inMemoryUserStorage.update(user);
+    }
+
+    /**
+     * Добавляет пользователя в друзья
+     *
+     * @param id       объекта пользователя, который добавляет в друзья
+     * @param friendId объекта пользователя, которого добавляют в друзья
+     * @return friendId объекта пользователя, которого добавляют в друзья
+     */
+    @PutMapping("/{id}/friends/{friendId}")
+    public long updateFriend(@Valid @PathVariable long id, @PathVariable long friendId) {
+        log.trace(String.valueOf(id));
+        log.trace(String.valueOf(friendId));
+
+        userService.addFriend(id, friendId);
+
         log.info("Информация о пользователе обновлена");
 
-        return user;
+        return friendId;
     }
 
-    private boolean validationEmail(User user) {
-        return user.getEmail().isEmpty() || !user.getEmail().contains("@");
+    /**
+     * Удаляет пользователя из списка друзей
+     *
+     * @param id       объекта пользователя, который удаляет из друзей
+     * @param friendId объекта пользователя, которого удаляют из друзья
+     * @return friendId объекта пользователя
+     */
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public long deleteFriend(@Valid @PathVariable long id, @PathVariable long friendId) {
+        log.trace(String.valueOf(id));
+        log.trace(String.valueOf(friendId));
+
+        userService.deleteFriend(id, friendId);
+
+        log.info("Пользователь удален из списка друзей");
+
+        return friendId;
     }
 
-    private boolean validationLogin(User user) {
-        return user.getLogin().isEmpty() || user.getLogin().contains(" ");
+    /**
+     * Возвращает список друзей пользователя
+     *
+     * @param id объекта пользователя
+     * @return список друзей пользователя
+     */
+    @GetMapping("/{id}/friends")
+    public List<User> findAllFriends(@PathVariable long id) {
+        log.debug("Текущее количество друзей: {}", userService.getAllFriends(id).size());
+
+        return userService.getAllFriends(id);
     }
 
-    private boolean validationBirthday(User user) {
-        return user.getBirthday().isAfter(LocalDate.now());
-    }
+    /**
+     * Возвращает список общих друзей двух пользователей
+     *
+     * @param id      объекта первого пользователя
+     * @param otherId объекта второго пользователя
+     * @return список общих друзей пользователей
+     */
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> findCommonFriends(@PathVariable long id, @PathVariable long otherId) {
+        log.debug("Текущее количество общих друзей: {}", userService.getCommonFriends(id, otherId));
 
-    private boolean validationName(User user) {
-        return user.getName().isBlank();
+        return userService.getCommonFriends(id, otherId);
     }
 }
