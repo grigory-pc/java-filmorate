@@ -1,31 +1,37 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
 
+
+/**
+ * Основной контроллер для работы с пользователями
+ */
 @Slf4j
 @RestController
 @RequestMapping("/users")
-@RequiredArgsConstructor
 public class UserController {
-    private final InMemoryUserStorage inMemoryUserStorage;
     private final UserService userService;
+
+    @Autowired
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     /**
      * Возвращает список всех пользователей
      */
     @GetMapping()
     public List<User> findAll() {
-        log.debug("Текущее количество пользователей: {}", inMemoryUserStorage.getUserAll().size());
+        log.debug("Текущее количество пользователей: {}", userService.getUserAll().size());
 
-        return inMemoryUserStorage.getUserAll();
+        return userService.getUserAll();
     }
 
     /**
@@ -36,9 +42,9 @@ public class UserController {
      */
     @GetMapping("/{id}")
     public User getUserById(@Valid @PathVariable long id) {
-        log.debug("Поиск пользователя: {}", inMemoryUserStorage.getUserById(id).getName());
+        log.debug("Поиск пользователя: {}", userService.getUserById(id).getName());
 
-        return inMemoryUserStorage.getUserById(id);
+        return userService.getUserById(id);
     }
 
     /**
@@ -50,8 +56,7 @@ public class UserController {
     public User create(@Valid @RequestBody User user) {
         log.trace(String.valueOf(user));
 
-        return inMemoryUserStorage.add(user);
-
+        return userService.add(user);
     }
 
     /**
@@ -63,7 +68,24 @@ public class UserController {
     public User update(@Valid @RequestBody User user) {
         log.trace(String.valueOf(user));
 
-        return inMemoryUserStorage.update(user);
+        return userService.update(user);
+    }
+
+    /**
+     * Удаляет пользователя из списка
+     *
+     * @param id объекта пользователя, который удаляет из друзей
+     * @return id объекта пользователя
+     */
+    @DeleteMapping("/{id}")
+    public long deleteFriend(@Valid @PathVariable long id) {
+        log.trace(String.valueOf(id));
+
+        userService.delete(id);
+
+        log.info("Пользователь удален");
+
+        return id;
     }
 
     /**

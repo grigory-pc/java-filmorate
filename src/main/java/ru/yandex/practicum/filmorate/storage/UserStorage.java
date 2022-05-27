@@ -10,9 +10,13 @@ import java.util.List;
  */
 @Component
 public interface UserStorage {
-    User add(User user);
-
     List<User> getUserAll();
 
     User getUserById(long userId);
+
+    User add(User user);
+
+    User update(int i, User user);
+
+    long delete(int i);
 }

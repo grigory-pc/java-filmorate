@@ -10,9 +10,13 @@ import java.util.List;
  */
 @Component
 public interface FilmStorage {
-    Film add(Film film);
-
     List<Film> getFilmAll();
 
     Film getFilmById(long filmId);
+
+    Film add(Film film);
+
+    Film update(int i, Film film);
+
+    long delete(int i);
 }

@@ -23,4 +23,24 @@ public class User {
     @PastOrPresent
     private LocalDate birthday;
     private Set<Long> friends;
+
+    /**
+     * Добавление пользователя в список друзей
+     */
+    public long addFriend(long friendId) {
+        if (!friends.contains(friendId)) {
+            friends.add(friendId);
+        }
+        return friendId;
+    }
+
+    /**
+     * Удаление пользователя из списка друзей
+     */
+    public long deleteFriend(long friendId) {
+        if (friends.contains(friendId)) {
+            friends.remove(friendId);
+        }
+        return friendId;
+    }
 }

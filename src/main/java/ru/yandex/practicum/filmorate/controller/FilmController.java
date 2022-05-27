@@ -1,12 +1,10 @@
 package ru.yandex.practicum.filmorate.controller;
 
-
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -17,32 +15,35 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/films")
-@RequiredArgsConstructor
 public class FilmController {
-    private final InMemoryFilmStorage inMemoryFilmStorage;
     private final FilmService filmService;
+
+    @Autowired
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     /**
      * Возвращает список всех фильмов
      */
     @GetMapping()
     public List<Film> findAll() {
-        log.debug("Текущее количество фильмов: {}", inMemoryFilmStorage.getFilmAll().size());
+        log.debug("Текущее количество фильмов: {}", filmService.getFilmAll().size());
 
-        return inMemoryFilmStorage.getFilmAll();
+        return filmService.getFilmAll();
     }
 
     /**
-     * Возвращает фильм по ID
+     * Возвращает фильм по id
      *
      * @param id объекта фильма
      * @return объект фильма
      */
     @GetMapping("/{id}")
     public Film getFilmById(@Valid @PathVariable long id) {
-        log.debug("Поиск фильма: {}", inMemoryFilmStorage.getFilmById(id).getName());
+        log.debug("Поиск фильма: {}", filmService.getFilmById(id).getName());
 
-        return inMemoryFilmStorage.getFilmById(id);
+        return filmService.getFilmById(id);
     }
 
     /**
@@ -54,7 +55,7 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.trace(String.valueOf(film));
 
-        return inMemoryFilmStorage.add(film);
+        return filmService.add(film);
     }
 
     /**
@@ -66,7 +67,24 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film film) {
         log.trace(String.valueOf(film));
 
-        return inMemoryFilmStorage.update(film);
+        return filmService.update(film);
+    }
+
+    /**
+     * Удаляет фильм
+     *
+     * @param id объекта фильма
+     * @return id объекта фильма
+     */
+    @DeleteMapping("/{id}")
+    public long delete(@Valid @PathVariable long id) {
+        log.trace(String.valueOf(id));
+
+        filmService.delete(id);
+
+        log.info("Удалён фильм: {}", filmService.getFilmById(id).getName());
+
+        return id;
     }
 
     /**
@@ -83,7 +101,7 @@ public class FilmController {
 
         filmService.addLike(id, userId);
 
-        log.info("Добавлен лайк фильму: {}", inMemoryFilmStorage.getFilmById(id).getName());
+        log.info("Добавлен лайк фильму: {}", filmService.getFilmById(id).getName());
 
         return userId;
     }
@@ -102,7 +120,7 @@ public class FilmController {
 
         filmService.deleteLike(id, userId);
 
-        log.info("Удалён лайк для фильма: {}", inMemoryFilmStorage.getFilmById(id).getName());
+        log.info("Удалён лайк для фильма: {}", filmService.getFilmById(id).getName());
 
         return userId;
     }
@@ -115,7 +133,7 @@ public class FilmController {
      */
     @GetMapping("/popular")
     public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
-        log.debug("Текущее количество Фильмов: {}", inMemoryFilmStorage.getFilmAll().size());
+        log.debug("Текущее количество Фильмов: {}", filmService.getFilmAll().size());
         if (count == null) {
             count = 10;
         }

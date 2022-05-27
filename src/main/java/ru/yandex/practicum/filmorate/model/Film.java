@@ -26,4 +26,24 @@ public class Film {
     @NotNull
     private Integer duration;
     private Set<Long> likes;
+
+    /**
+     * Добавление пользователя в список лайков
+     */
+    public long addLike(long userId) {
+        if (!likes.contains(userId)) {
+            likes.add(userId);
+        }
+        return userId;
+    }
+
+    /**
+     * Удаление пользователя из списка лайков
+     */
+    public long deleteLike(long userId) {
+        if (!likes.contains(userId)) {
+            likes.remove(userId);
+        }
+        return userId;
+    }
 }
