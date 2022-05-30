@@ -5,11 +5,15 @@ import lombok.Data;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
+import java.util.Set;
 
+/**
+ * Объект пользователя
+ */
 @Data
 @Builder
 public class User {
-    private int id;
+    private long id;
     @NotBlank
     @Email
     private String email;
@@ -18,12 +22,25 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
+    private Set<Long> friends;
 
-    public User(int id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
+    /**
+     * Добавление пользователя в список друзей
+     */
+    public long addFriend(long friendId) {
+        if (!friends.contains(friendId)) {
+            friends.add(friendId);
+        }
+        return friendId;
+    }
+
+    /**
+     * Удаление пользователя из списка друзей
+     */
+    public long deleteFriend(long friendId) {
+        if (friends.contains(friendId)) {
+            friends.remove(friendId);
+        }
+        return friendId;
     }
 }
