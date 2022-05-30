@@ -27,22 +27,23 @@ public class InMemoryUserStorage implements UserStorage {
     /**
      * Обновление пользователя в списке
      */
-    public User update(int i, User user) {
-        users.set(i, user);
+    public User update(User userExisting, User userForUpdate) {
+        userExisting.setName(userForUpdate.getName());
+        userExisting.setBirthday(userForUpdate.getBirthday());
+        userExisting.setEmail(userForUpdate.getEmail());
+        userExisting.setLogin(userForUpdate.getLogin());
 
-        return user;
+        return userExisting;
 
     }
 
     /**
      * Удаление пользователя из списка
      */
-    public long delete(int i) {
-        long id = users.get(i).getId();
-        users.remove(i);
+    public User delete(User user) {
+        users.remove(user);
 
-        return id;
-
+        return user;
     }
 
     /**

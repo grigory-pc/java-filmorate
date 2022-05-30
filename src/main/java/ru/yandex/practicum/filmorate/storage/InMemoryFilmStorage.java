@@ -28,20 +28,22 @@ public class InMemoryFilmStorage implements FilmStorage {
     /**
      * Обновление фильма в списке
      */
-    public Film update(int i, Film film) {
-        films.set(i, film);
+    public Film update(Film filmExisting, Film filmForUpdate) {
+        filmExisting.setDescription(filmForUpdate.getDescription());
+        filmExisting.setName(filmForUpdate.getName());
+        filmExisting.setDuration(filmForUpdate.getDuration());
+        filmExisting.setReleaseDate(filmForUpdate.getReleaseDate());
 
-        return film;
+        return filmExisting;
     }
 
     /**
      * Удаление фильма из списка
      */
-    public long delete(int i) {
-        long id = films.get(i).getId();
-        films.remove(i);
+    public Film delete(Film film) {
+        films.remove(film);
 
-        return id;
+        return film;
     }
 
     /**

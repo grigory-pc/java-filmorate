@@ -47,81 +47,36 @@ public class UserService {
      * Валидирует поля объекта и добавляет пользователя в список
      */
     public User add(User user) {
-        try {
-            if (validator.validationUserEmail(user)) {
-                throw new ValidationException("Необходимо указать email и email должен содержать символ '@'");
-            } else if (validator.validationUserLogin(user)) {
-                throw new ValidationException("Необходимо указать login и login не должен содержать пробелов");
-            } else if (validator.validationUserBirthday(user)) {
-                throw new ValidationException("Некорректно указана дата рождения. Она не может быть в будущем");
-            } else {
-                if (validator.validationUserName(user)) {
-                    user.setName(user.getLogin());
-                }
-                id = generateId();
-                user.setId(id);
-                user.setFriends(new HashSet<>());
-                return userStorage.add(user);
+        if (validationFieldsUser(user)) {
+            if (validator.validationUserName(user)) {
+                user.setName(user.getLogin());
             }
-        } catch (ValidationException e) {
-            log.warn(e.getMessage());
-            throw e;
+            id = generateId();
+            user.setId(id);
+            user.setFriends(new HashSet<>());
+            return userStorage.add(user);
         }
+        return user;
     }
 
     /**
      * Валидирует поля объекта и обновляет пользователя в списке
      */
     public User update(User user) {
-        List<User> users = userStorage.getUserAll();
+        User userExisting = getUserById(user.getId());
 
-        try {
-            if (validator.validationUserEmail(user)) {
-                throw new ValidationException("Необходимо указать email и email должен содержать символ '@'");
-            } else if (validator.validationUserLogin(user)) {
-                throw new ValidationException("Необходимо указать login и login не должен содержать пробелов");
-            } else if (validator.validationUserBirthday(user)) {
-                throw new ValidationException("Некорректно указана дата рождения. Она не может быть в будущем");
-            } else {
-                for (int i = 0; i < users.size(); i++) {
-                    if (users.get(i).getId() == user.getId()) {
-                        User userExisting = users.get(i);
-                        userExisting.setName(user.getName());
-                        userExisting.setBirthday(user.getBirthday());
-                        userExisting.setEmail(user.getEmail());
-                        userExisting.setLogin(user.getLogin());
-                        return userStorage.update(i, userExisting);
-                    }
-                }
-                throw new NotFoundException(String.format("Пользователь с id %d не найден", user.getId()));
-            }
-        } catch (ValidationException | NotFoundException e) {
-            log.warn(e.getMessage());
-            throw e;
+        if (validationFieldsUser(user)) {
+            userStorage.update(userExisting, user);
         }
+
+        return userExisting;
     }
 
     /**
      * Удаление пользователя из списка
      */
-    public long delete(long id) {
-        List<User> users = userStorage.getUserAll();
-
-        try {
-            if (validator.validationId(id)) {
-                throw new NotFoundException("id пользователя должен быть больше 0");
-            } else {
-                for (int i = 0; i < users.size(); i++) {
-                    if (users.get(i).getId() == id) {
-                        return userStorage.delete(i);
-                    }
-                }
-                throw new NotFoundException(String.format("Пользователь с id %d не найден", id));
-            }
-        } catch (NotFoundException e) {
-            log.warn(e.getMessage());
-            throw e;
-        }
+    public User delete(long id) {
+        return userStorage.delete(getUserById(id));
     }
 
     /**
@@ -200,6 +155,26 @@ public class UserService {
      */
     long generateId() {
         return ++id;
+    }
+
+    /**
+     * Валидация полей объекта
+     */
+    public boolean validationFieldsUser(User user) {
+        try {
+            if (validator.validationUserEmail(user)) {
+                throw new ValidationException("Необходимо указать email и email должен содержать символ '@'");
+            } else if (validator.validationUserLogin(user)) {
+                throw new ValidationException("Необходимо указать login и login не должен содержать пробелов");
+            } else if (validator.validationUserBirthday(user)) {
+                throw new ValidationException("Некорректно указана дата рождения. Она не может быть в будущем");
+            } else {
+                return true;
+            }
+        } catch (ValidationException e) {
+            log.warn(e.getMessage());
+            throw e;
+        }
     }
 }
 

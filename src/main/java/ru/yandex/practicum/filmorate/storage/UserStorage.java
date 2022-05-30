@@ -16,7 +16,7 @@ public interface UserStorage {
 
     User add(User user);
 
-    User update(int i, User user);
+    User update(User userExisting, User userForUpdate);
 
-    long delete(int i);
+    User delete(User user);
 }
