@@ -18,6 +18,8 @@ public class Film {
     private long id;
     @NotBlank
     private String name;
+    private String genre;
+    private String rating;
     @NotBlank
     private String description;
     @PastOrPresent
