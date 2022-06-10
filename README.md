@@ -40,68 +40,44 @@
 ![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_04.png?raw=true)
 
 Примеры запросов к БД.
-Получение списка всех фильмов:
+Получение списка всех фильмов:  
+SELECT *  
 
-SELECT *
-
-FROM film
+FROM film  
 
 Получение списка фильмов с категорией "G" и жанром "Comedy":
-
-SELECT f.name AS film_name,
-
- f.release_date
-
-FROM film AS f
-
-INNER JOIN genre AS g ON f.genre_id = g.genre_id
-
-INNER JOIN rating AS r ON f.rating_id = r.rating_id
-
-WHERE g.name LIKE "Comedy"
-
-AND r.name LIKE "G"
-
-GROUP BY film_name
-
-ORDER BY film_name;
+SELECT f.name AS film_name,  
+    f.release_date  
+FROM film AS f  
+INNER JOIN genre AS g ON f.genre_id = g.genre_id  
+INNER JOIN rating AS r ON f.rating_id = r.rating_id  
+WHERE g.name LIKE "Comedy"  
+    AND r.name LIKE "G"  
+GROUP BY film_name  
+ORDER BY film_name;  
 
 
+Получение списка топ 10 фильмов:  
+SELECT f.name AS film_name,  
+    f.release_date,  
+    COUNT(fl.user_email)  
+FROM film AS f  
+INNER JOIN film_like AS fl ON fl.film_id = f.id  
+GROUP BY fl.film_id  
+ORDER BY film_name;  
 
-Получение списка топ 10 фильмов:
-
-SELECT f.name AS film_name,
-
-f.release_date,
-
-COUNT(fl.user_email)
-
-FROM film AS f
-
-INNER JOIN film_like AS fl ON fl.film_id = f.id
-
-GROUP BY fl.film_id
-
-ORDER BY film_name;
-
-
-Получение списка всех пользователей:
-
-SELECT *
+Получение списка всех пользователей:  
+SELECT *  
 
 FROM user
 
-Получение списка друзей пользователя:
+Получение списка друзей пользователя:  
+SELECT fu.user2 AS friends   
+FROM friendship_user AS fu  
+INNER JOIN user AS u ON u.email = fu.user1_email  
+WHEN u.email LIKE "john@mail.com"  
+ORDER BY friends;  
 
-SELECT fu.user2 AS friends
-
-FROM friendship_user AS fu
-
-INNER JOIN user AS u ON u.email = fu.user1_email
-
-WHEN u.email LIKE "john@mail.com"
-
-ORDER BY friends;
 
 ---
 
