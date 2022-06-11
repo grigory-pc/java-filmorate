@@ -106,7 +106,8 @@ FROM film
 SELECT f.name AS film_name,  
     f.release_date  
 FROM film AS f  
-INNER JOIN genre AS g ON f.genre_id = g.genre_id  
+INNER JOIN film_genre AS fg ON f.film_id = g.film_id  
+INNER JOIN genre AS g ON fg.genre_id = g.genre_id   
 INNER JOIN rating AS r ON f.rating_id = r.rating_id  
 WHERE g.name LIKE "Comedy"  
     AND r.name LIKE "G"  
@@ -119,20 +120,22 @@ SELECT f.name AS film_name,
     f.release_date,  
     COUNT(fl.user_email)  
 FROM film AS f  
-INNER JOIN film_like AS fl ON fl.film_id = f.id  
+INNER JOIN film_like AS fl ON fl.film_id = f.id
+INNER JOIN user_filmorate AS U ON U.email_id = fl.user_email
 GROUP BY fl.film_id  
-ORDER BY film_name;  
+ORDER BY film_name
+LIMIT 10;  
 
 Получение списка всех пользователей:  
 SELECT *  
 
-FROM user_filmorate
+FROM user_filmorate;
 
 Получение списка друзей пользователя:  
 SELECT fu.user2 AS friends   
 FROM friendship_user AS fu  
 INNER JOIN user_filmorate AS u ON u.email = fu.user1_email  
-WHEN u.email LIKE "john@mail.com"  
+WHERE u.email LIKE "john@mail.com"  
 ORDER BY friends;  
 
 
