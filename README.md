@@ -53,8 +53,7 @@ birthday date
 
 Table film as F {  
 film_id long [pk, increment]  
-name varchar  
-genre_id int  
+name varchar
 rating_id int  
 description varchar  
 release_date date  
@@ -100,7 +99,7 @@ name varchar
 Получение списка всех фильмов:  
 SELECT *  
 
-FROM film  
+FROM film;  
 
 Получение списка фильмов с категорией "G" и жанром "Comedy":
 SELECT f.name AS film_name,  
@@ -137,7 +136,6 @@ FROM friendship_user AS fu
 INNER JOIN user_filmorate AS u ON u.email = fu.user1_email  
 WHERE u.email LIKE "john@mail.com"  
 ORDER BY friends;  
-
 
 ---
 
