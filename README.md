@@ -37,63 +37,7 @@
 ---
 
 <b>Схема базы данных (БД) приложения:</b>
-![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_05.png?raw=true)
-
-<i> ">" - many-to-one; "<" - one-to-many; "-" - one-to-one </i>
-
-// > many-to-one; < one-to-many; - one-to-one
-
-Table user_filmorate as U {  
-email varchar [pk]  
-login varchar  
-first_name varchar  
-last_name varchar  
-birthday date  
-}  
-
-Table film as F {  
-film_id long [pk, increment]  
-name varchar
-rating_id int  
-description varchar  
-release_date date  
-duration int    
-}  
-Ref: F.film_id < FG.film_id  
-Ref: F.rating_id > R.rating_id  
-
-Table friendship_user as FU {  
-user1_email varchar [ref: > U.email]  
-user2_email varchar [ref: > U.email]  
-user_initiated_friendship varchar   
-friendship_status boolean  
-Indexes {  
-(user1_email, user2_email) [pk]  
-}  
-}  
-
-Table film_like as FL {  
-film_id long [ref: - F.film_id]  
-user_email varchar [ref: - U.email]  
-Indexes {  
-(film_id, user_email) [pk]  
-}  
-}  
-
-Table film_genre as FG {  
-film_id int [pk]  
-genre_id long [ref: < G.genre_id]  
-}  
-  
-Table genre as G {  
-genre_id long [pk]  
-name varchar  
-}  
-  
-Table raiting as R {  
-rating_id int [pk]  
-name varchar  
-}  
+![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_06.png?raw=true)
 
 <b>Примеры запросов к БД.</b>  
 Получение списка всех фильмов:  
