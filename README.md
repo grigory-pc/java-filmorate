@@ -61,10 +61,10 @@ ORDER BY film_name;
 Получение списка топ 10 фильмов:  
 SELECT f.name AS film_name,  
     f.release_date,  
-    COUNT(fl.user_email)  
+    COUNT(fl.user_id)  
 FROM film AS f  
-INNER JOIN film_like AS fl ON fl.film_id = f.id
-INNER JOIN user_filmorate AS U ON U.email_id = fl.user_email
+INNER JOIN film_like AS fl ON fl.film_id = f.film_id
+INNER JOIN user_filmorate AS U ON U.id = fl.user_id
 GROUP BY fl.film_id  
 ORDER BY film_name
 LIMIT 10;  
@@ -75,9 +75,9 @@ SELECT *
 FROM user_filmorate;
 
 Получение списка друзей пользователя:  
-SELECT fu.user2 AS friends   
+SELECT fu.user2_id AS friends   
 FROM friendship_user AS fu  
-INNER JOIN user_filmorate AS u ON u.email = fu.user1_email  
+INNER JOIN user_filmorate AS u ON u.id = fu.user1_id  
 WHERE u.email LIKE "john@mail.com"  
 ORDER BY friends;  
 
