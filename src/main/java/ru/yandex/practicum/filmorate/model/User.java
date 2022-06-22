@@ -20,6 +20,7 @@ public class User {
     @NotBlank
     private String login;
     private String name;
+    private String friendship;
     @PastOrPresent
     private LocalDate birthday;
     private Set<Long> friends;
