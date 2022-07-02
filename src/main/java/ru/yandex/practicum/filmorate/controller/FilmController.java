@@ -77,14 +77,10 @@ public class FilmController {
      * @return id объекта фильма
      */
     @DeleteMapping("/{id}")
-    public long delete(@Valid @PathVariable long id) {
+    public boolean delete(@Valid @PathVariable long id) {
         log.trace(String.valueOf(id));
 
-        filmService.delete(id);
-
-        log.info("Удалён фильм: {}", filmService.getFilmById(id).getName());
-
-        return id;
+        return filmService.delete(id);
     }
 
     /**
@@ -92,18 +88,14 @@ public class FilmController {
      *
      * @param id     объекта фильма
      * @param userId объекта пользователя, который добавляет лайк
-     * @return userId объекта пользователя
+     * @return boolean результата добавления лайка к фильму
      */
     @PutMapping("/{id}/like/{userId}")
-    public long addFilmLike(@Valid @PathVariable long id, @PathVariable long userId) {
+    public boolean addFilmLike(@Valid @PathVariable long id, @PathVariable long userId) {
         log.trace(String.valueOf(id));
         log.trace(String.valueOf(userId));
 
-        filmService.addLike(id, userId);
-
-        log.info("Добавлен лайк фильму: {}", filmService.getFilmById(id).getName());
-
-        return userId;
+        return filmService.addLike(id, userId);
     }
 
     /**
@@ -111,18 +103,14 @@ public class FilmController {
      *
      * @param id     объекта фильма
      * @param userId объекта пользователя, который удаляет лайк
-     * @return userId объекта пользователя
+     * @return boolean результата удаления лайка у фильма
      */
     @DeleteMapping("/{id}/like/{userId}")
-    public long deleteLike(@Valid @PathVariable long id, @PathVariable long userId) {
+    public boolean deleteLike(@Valid @PathVariable long id, @PathVariable long userId) {
         log.trace(String.valueOf(id));
         log.trace(String.valueOf(userId));
 
-        filmService.deleteLike(id, userId);
-
-        log.info("Удалён лайк для фильма: {}", filmService.getFilmById(id).getName());
-
-        return userId;
+        return filmService.deleteLike(id, userId);
     }
 
     /**
@@ -137,7 +125,7 @@ public class FilmController {
         if (count == null) {
             count = 10;
         }
-
+        System.out.println(filmService.getPopularFilms(count));
         return filmService.getPopularFilms(count);
     }
 }

@@ -72,20 +72,16 @@ public class UserController {
     }
 
     /**
-     * Удаляет пользователя из списка
+     * Удаляет пользователя из таблицы
      *
-     * @param id объекта пользователя, который удаляет из друзей
-     * @return id объекта пользователя
+     * @param id пользователя, которого удалют
+     * @return boolean
      */
     @DeleteMapping("/{id}")
-    public long deleteFriend(@Valid @PathVariable long id) {
+    public boolean deleteFriend(@Valid @PathVariable long id) {
         log.trace(String.valueOf(id));
 
-        userService.delete(id);
-
-        log.info("Пользователь удален");
-
-        return id;
+        return userService.delete(id);
     }
 
     /**
@@ -101,7 +97,6 @@ public class UserController {
         log.trace(String.valueOf(friendId));
 
         userService.addFriend(id, friendId);
-        userService.addFriend(friendId, id);
 
         log.info("Информация о пользователе обновлена");
 

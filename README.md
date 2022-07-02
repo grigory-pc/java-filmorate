@@ -15,8 +15,7 @@
  - рейтинг;
  - описание;
  - дату выпуска;
- - продолжительность;
- - рейтинг.
+ - продолжительность.
 4. Зарегистрировать пользователя на ресурсе.
 5. Удалить пользователя
 6. Обновить информацию пользователя ресурса.
@@ -37,49 +36,27 @@
 ---
 
 <b>Схема базы данных (БД) приложения:</b>
-![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_06.png?raw=true)
+![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_07.png?raw=true)
 
 <b>Примеры запросов к БД.</b>  
 Получение списка всех фильмов:  
-SELECT *  
-
-FROM film;  
-
-Получение списка фильмов с категорией "G" и жанром "Comedy":
-SELECT f.name AS film_name,  
-    f.release_date  
-FROM film AS f  
-INNER JOIN film_genre AS fg ON f.film_id = g.film_id  
-INNER JOIN genre AS g ON fg.genre_id = g.genre_id   
-INNER JOIN rating AS r ON f.rating_id = r.rating_id  
-WHERE g.name LIKE "Comedy"  
-    AND r.name LIKE "G"  
-GROUP BY film_name  
-ORDER BY film_name;  
-
+SELECT * FROM films;  
 
 Получение списка топ 10 фильмов:  
-SELECT f.name AS film_name,  
-    f.release_date,  
-    COUNT(fl.user_id)  
-FROM film AS f  
-INNER JOIN film_like AS fl ON fl.film_id = f.film_id
-INNER JOIN user_filmorate AS U ON U.id = fl.user_id
+SELECT f.*  
+FROM film_like fl  
+LEFT JOIN films f ON fl.film_id = f.film_id  
 GROUP BY fl.film_id  
-ORDER BY film_name
-LIMIT 10;  
+ORDER BY COUNT(fl.user_id) DESC  
+LIMIT 10;    
 
 Получение списка всех пользователей:  
-SELECT *  
-
-FROM user_filmorate;
+SELECT * FROM users;
 
 Получение списка друзей пользователя:  
-SELECT fu.user2_id AS friends   
-FROM friendship_user AS fu  
-INNER JOIN user_filmorate AS u ON u.id = fu.user1_id  
-WHERE u.email LIKE "john@mail.com"  
-ORDER BY friends;  
+SELECT u.*  
+FROM friendship fs  
+LEFT JOIN users u ON fs.user2_id;
 
 ---
 
