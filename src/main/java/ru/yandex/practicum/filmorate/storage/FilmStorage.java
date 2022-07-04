@@ -10,7 +10,6 @@ import java.util.List;
  * Интерфейс для хранения фильмов
  */
 @Component
-@Qualifier("FilmDbStorage")
 public interface FilmStorage {
     List<Film> getFilmAll();
 

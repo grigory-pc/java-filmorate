@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * Реализация интерфейса для хранения пользователей
  */
-@Component("userDbStorage")
+@Component
 @RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
     private static final String FIND_ALL_USERS = "SELECT * " +

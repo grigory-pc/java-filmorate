@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Component("genresDbStorage")
+@Component
 @RequiredArgsConstructor
 public class GenresDbStorage implements GenresStorage {
     private static final String FIND_ALL_GENRE = "SELECT * " +

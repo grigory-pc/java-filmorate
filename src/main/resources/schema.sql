@@ -1,4 +1,4 @@
-DROP TABLE users, films, friendship, film_like, film_genre, genre, mpa;
+DROP TABLE IF EXISTS users, films, friendship, film_like, film_genre, genre, mpa;
 
 CREATE TABLE IF NOT EXISTS `users`
 (
@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `mpa`
 
 
 ALTER TABLE `film_genre`
-    ADD FOREIGN KEY (`film_id`) REFERENCES `films` (`film_id`) ON DELETE CASCADE;
+    ADD FOREIGN KEY (`film_id`) REFERENCES `films` (`film_id`) ON DELETE CASCADE ;
 
 ALTER TABLE `films`
     ADD FOREIGN KEY (`mpa_id`) REFERENCES `mpa` (`mpa_id`) ON DELETE CASCADE;

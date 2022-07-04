@@ -9,7 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
-@Component("mpaDbStorage")
+@Component
 @RequiredArgsConstructor
 public class MpaDbStorage implements MpaStorage {
     private static final String FIND_ALL_MPA = "SELECT * " +

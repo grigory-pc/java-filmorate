@@ -17,7 +17,7 @@ import java.util.List;
  * Реализация интерфейса для хранения фильмов
  */
 @Slf4j
-@Component("filmDbStorage")
+@Component
 @RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private static final String FIND_ALL_FILMS = "SELECT * " +

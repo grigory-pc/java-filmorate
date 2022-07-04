@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Builder;
-import lombok.Data;
+import lombok.*;
 
 import javax.validation.constraints.*;
 import java.time.LocalDate;
@@ -13,6 +12,8 @@ import java.util.Map;
  */
 @Data
 @Builder
+@AllArgsConstructor
+@RequiredArgsConstructor
 public class User {
     private long id;
     @NotBlank
@@ -23,6 +24,13 @@ public class User {
     private String name;
     @PastOrPresent
     private LocalDate birthday;
+
+    public User(String email, String login, String name, LocalDate birthday) {
+        this.email = email;
+        this.login = login;
+        this.name = name;
+        this.birthday = birthday;
+    }
 
     public Map<String, Object> toMap() {
         Map<String, Object> values = new HashMap<>();

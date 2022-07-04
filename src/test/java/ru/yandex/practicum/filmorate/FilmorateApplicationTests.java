@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserDbStorage;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
@@ -16,19 +17,19 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 class FilmorateApplicationTests {
+    private final UserDbStorage userStorage;
 
-	private final UserDbStorage userStorage;
+    @Test
+    public void testFindUserById() {
+        userStorage.add(new User("test@test.ru", "test", "test", LocalDate.of(2000, 01,
+                01)));
 
-	@Test
-	public void testFindUserById() {
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
 
-		Optional<User> userOptional = Optional.ofNullable(userStorage.getUserById(1));
-
-		assertThat(userOptional)
-				.isPresent()
-				.hasValueSatisfying(user ->
-						assertThat(user).hasFieldOrPropertyWithValue("id", 1)
-				);
-	}
-
+        assertThat(userOptional)
+                .isPresent()
+                .hasValueSatisfying(user ->
+                        assertThat(user).hasFieldOrPropertyWithValue("id", 1L)
+                );
+    }
 }
