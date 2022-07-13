@@ -25,6 +25,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
+    @Override
+    public Film update(Film film) {
+        return null;
+    }
+
     /**
      * Обновление фильма в списке
      */
@@ -40,10 +45,25 @@ public class InMemoryFilmStorage implements FilmStorage {
     /**
      * Удаление фильма из списка
      */
-    public Film delete(Film film) {
+    public boolean delete(Film film) {
         films.remove(film);
 
-        return film;
+        return true;
+    }
+
+    @Override
+    public List<Film> getPopularFilms(int count) {
+        return null;
+    }
+
+    @Override
+    public boolean addLike(long userId, long filmId) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteLike(long userId, long filmId) {
+        return false;
     }
 
     /**

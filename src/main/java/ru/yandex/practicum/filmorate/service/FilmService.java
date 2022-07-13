@@ -2,15 +2,14 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Класс, ответственный за операции с фильмами
@@ -18,12 +17,11 @@ import java.util.stream.Collectors;
 @Slf4j
 @Service
 public class FilmService {
-    private long id;
     private final FilmStorage filmStorage;
     private final Validator validator;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage, Validator validator) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, Validator validator) {
         this.filmStorage = filmStorage;
         this.validator = validator;
     }
@@ -36,98 +34,94 @@ public class FilmService {
     }
 
     /**
-     * Возвращает фильм по id из списка
+     * Возвращает фильм по id
      */
     public Film getFilmById(long filmId) {
+        try {
+            if (validator.validationId(filmId)) {
+                throw new NotFoundException("id пользователя должен быть больше 0");
+            }
+        } catch (NotFoundException e) {
+            log.warn(e.getMessage());
+            throw e;
+        }
         return filmStorage.getFilmById(filmId);
     }
 
     /**
-     * Валидирует поля объекта и добавляет объект фильма в список
+     * Валидирует поля объекта и добавляет объект фильма
      */
     public Film add(Film film) {
-        if (validationFieldsFilm(film)) {
-            id = generateId();
-            film.setId(id);
-            film.setLikes(new HashSet<>());
-            return filmStorage.add(film);
-        }
-        return film;
+        validationFieldsFilm(film);
+
+        return filmStorage.add(film);
     }
 
     /**
-     * Валидирует поля объекта и обновляет объект фильма в списке
+     * Валидирует поля объекта и обновляет объект фильма
      */
     public Film update(Film film) {
-        Film filmExisting = getFilmById(film.getId());
+        try {
+            if (validator.validationId(film.getId())) {
+                throw new NotFoundException("id пользователя должен быть больше 0");
+            }
+            validationFieldsFilm(film);
 
-        if (validationFieldsFilm(film)) {
-            filmStorage.update(filmExisting, film);
+            return filmStorage.update(film);
+        } catch (NotFoundException e) {
+            log.warn(e.getMessage());
+            throw e;
         }
-
-        return filmExisting;
     }
 
     /**
-     * Удаляет объект фильма из списка
+     * Удаление фильма
      */
-    public Film delete(long id) {
+    public boolean delete(long id) {
         return filmStorage.delete(getFilmById(id));
     }
 
     /**
-     * Добавление лайка в коллекцию для определенного фильма
+     * Добавление лайка для определенного фильма
      */
-    public long addLike(long userId, long filmId) {
+    public boolean addLike(long userId, long filmId) {
         try {
             if (validator.validationId(userId) || validator.validationId(filmId)) {
                 throw new NotFoundException("id пользователя или фильма должен быть больше 0");
             }
-            filmStorage.getFilmById(filmId).addLike(userId);
+            return filmStorage.addLike(userId, filmId);
         } catch (NotFoundException e) {
             log.warn(e.getMessage());
             throw e;
         }
-        return userId;
     }
 
     /**
-     * Удаление лайка из коллекции для определенного фильма
+     * Удаление лайка для определенного фильма
      */
-    public long deleteLike(long userId, long filmId) {
+    public boolean deleteLike(long filmId, long userId) {
         try {
-            if (validator.validationId(userId) || validator.validationId(filmId)) {
+            if (validator.validationId(filmId) || validator.validationId(userId)) {
                 throw new NotFoundException("id пользователя или фильма должен быть больше 0");
             }
-            filmStorage.getFilmById(filmId).deleteLike(userId);
+            return filmStorage.deleteLike(filmId, userId);
         } catch (NotFoundException e) {
             log.warn(e.getMessage());
             throw e;
         }
-        return userId;
     }
 
     /**
      * Формирование списка популярных фильмов на базе количества лайков
      */
     public List<Film> getPopularFilms(Integer count) {
-        return filmStorage.getFilmAll().stream().sorted((p0, p1) -> {
-            int comp = Integer.compare(p0.getLikes().size(), p1.getLikes().size());
-            return comp;
-        }).limit(count).collect(Collectors.toList());
-    }
-
-    /**
-     * Создание нового id для добавления нового фильма в список
-     */
-    long generateId() {
-        return ++id;
+        return filmStorage.getPopularFilms(count);
     }
 
     /**
      * Валидация полей объекта
      */
-    public boolean validationFieldsFilm(Film film) {
+    public void validationFieldsFilm(Film film) {
         try {
             if (validator.validationFilmName(film)) {
                 throw new ValidationException("Необходимо указать название фильма");
@@ -137,8 +131,6 @@ public class FilmService {
                 throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
             } else if (validator.validationFilmDuration(film)) {
                 throw new ValidationException("Продолжительность фильма не может быть меньше 0");
-            } else {
-                return true;
             }
         } catch (ValidationException e) {
             log.warn(e.getMessage());

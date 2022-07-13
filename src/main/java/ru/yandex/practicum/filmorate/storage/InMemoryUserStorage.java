@@ -27,23 +27,24 @@ public class InMemoryUserStorage implements UserStorage {
     /**
      * Обновление пользователя в списке
      */
-    public User update(User userExisting, User userForUpdate) {
-        userExisting.setName(userForUpdate.getName());
-        userExisting.setBirthday(userForUpdate.getBirthday());
-        userExisting.setEmail(userForUpdate.getEmail());
-        userExisting.setLogin(userForUpdate.getLogin());
-
-        return userExisting;
-
+    public User update(User user) {
+//        userExisting.setName(userForUpdate.getName());
+//        userExisting.setBirthday(userForUpdate.getBirthday());
+//        userExisting.setEmail(userForUpdate.getEmail());
+//        userExisting.setLogin(userForUpdate.getLogin());
+//
+        return user;
     }
 
     /**
      * Удаление пользователя из списка
      */
-    public User delete(User user) {
+    public boolean delete(User user) {
+        User userForDelete = user;
+
         users.remove(user);
 
-        return user;
+        return users.contains(userForDelete);
     }
 
     /**
@@ -62,5 +63,26 @@ public class InMemoryUserStorage implements UserStorage {
      */
     public List<User> getUserAll() {
         return users;
+    }
+
+
+    @Override
+    public List<User> getFriendList(long id) {
+        return null;
+    }
+
+    @Override
+    public boolean addFriend(long id, long friendId) {
+        return false;
+    }
+
+    @Override
+    public boolean deleteFriend(long id, long friendId) {
+        return false;
+    }
+
+    @Override
+    public Set<Long> getFriendsIdListByUserId(long id) {
+        return null;
     }
 }

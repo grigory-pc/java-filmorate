@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -16,7 +17,13 @@ public interface FilmStorage {
 
     Film add(Film film);
 
-    Film update(Film filmExisting, Film filmForUpdate);
+    Film update(Film film);
 
-    Film delete(Film film);
+    boolean delete(Film film);
+
+    List<Film> getPopularFilms(int count);
+
+    boolean addLike(long userId, long filmId);
+
+    boolean deleteLike(long userId, long filmId);
 }
