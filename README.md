@@ -36,7 +36,7 @@
 ---
 
 <b>Схема базы данных (БД) приложения:</b>
-![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/db-scheme/filmorateDBscheme_07.png?raw=true)
+![Схема БД приложения filmorate](https://github.com/grigory-pc/java-filmorate/blob/main/filmorateDBscheme_07.png?raw=true)
 
 <b>Примеры запросов к БД.</b>  
 Получение списка всех фильмов:  
